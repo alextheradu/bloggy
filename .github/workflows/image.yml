@@ -51,7 +51,13 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # secret scoped to this step only, so no third-party action can read it
+      # secret scoped to this step only, so no third-party action can read it.
+      # Dokploy titles a deployment from a GitHub push payload (head_commit
+      # message + id), so send a minimal one: the deploy list then shows the
+      # commit subject instead of "NEW CHANGES". With the Docker provider a
+      # push event carries no image info, so Dokploy just redeploys :latest.
+      # The message goes through jq, never into the shell, so quotes in a
+      # commit subject can't break or inject anything.
       - name: redeploy on dokploy
         env:
           DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
@@ -60,4 +66,13 @@ jobs:
             echo "DOKPLOY_DEPLOY_WEBHOOK not set, skipping redeploy"
             exit 0
           fi
-          curl -fsS --retry 3 -o /dev/null -X POST "$DOKPLOY_DEPLOY_WEBHOOK"
+          payload=$(jq -n \
+            --arg ref "$GITHUB_REF" \
+            --arg id "$GITHUB_SHA" \
+            --arg msg "$(git log -1 --format=%s "$GITHUB_SHA")" \
+            '{ref: $ref, head_commit: {id: $id, message: $msg}}')
+          curl -fsS --retry 3 -o /dev/null -X POST \
+            -H 'Content-Type: application/json' \
+            -H 'X-GitHub-Event: push' \
+            --data "$payload" \
+            "$DOKPLOY_DEPLOY_WEBHOOK"
