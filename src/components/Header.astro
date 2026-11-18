@@ -29,20 +29,21 @@ const initial = (user?.name || '?').trim().charAt(0).toLowerCase();
           </summary>
           <div class="menu">
             <div class="who">
-              {user.name}
-              <br />
-              <span style="font-family: var(--mono); font-size: 0.7rem;">
-                via {user.provider === 'hca' ? 'hack club' : 'github'}
-              </span>
+              <span class="who-name">{user.name}</span>
+              <span class="who-via">via {user.provider === 'hca' ? 'hack club' : 'github'}</span>
             </div>
-            {isAdmin && <a class="plain" href={u('/admin')}>admin</a>}
+            <div class="menu-sep" aria-hidden="true"></div>
             {isAdmin && (
-              <form method="post" action={u('/api/admin/posts')}>
-                <button type="submit">new post</button>
-              </form>
+              <>
+                <a class="plain" href={u('/admin')}>admin</a>
+                <form method="post" action={u('/api/admin/posts')}>
+                  <button type="submit">new post</button>
+                </form>
+                <div class="menu-sep" aria-hidden="true"></div>
+              </>
             )}
             <form method="post" action={`${u('/auth/logout')}?next=${encodeURIComponent(here)}`}>
-              <button type="submit">log out</button>
+              <button type="submit" class="logout">log out</button>
             </form>
           </div>
         </details>
