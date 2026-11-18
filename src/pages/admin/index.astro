@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import AdminRowActions from '../../components/react/AdminRowActions';
+import { listAll } from '../../lib/posts';
+import { u } from '../../lib/url';
+import { shortDate, pad2 } from '../../lib/format';
+
+const posts = await listAll();
+const counts = {
+  published: posts.filter((p) => p.status === 'published').length,
+  unlisted: posts.filter((p) => p.status === 'unlisted').length,
+  draft: posts.filter((p) => p.status === 'draft').length,
+};
+---
+
+<Base title="admin" noindex wide>
+  <section class="hero">
+    <p class="eyebrow">// admin</p>
+    <h1>posts</h1>
+    <p class="lead">
+      {counts.published} published · {counts.unlisted} unlisted · {counts.draft} draft{counts.draft === 1 ? '' : 's'}
+    </p>
+  </section>
+
+  <section>
+    <div class="admin-head">
+      <h2 style="margin:0">all posts <span class="hint">newest edits first</span></h2>
+      <form method="post" action={u('/api/admin/posts')}>
+        <button class="btn primary" type="submit">+ new post</button>
+      </form>
+    </div>
+    {
+      posts.length === 0 ? (
+        <p class="empty">no posts yet. hit “new post”.</p>
+      ) : (
+        <div style="border-top: 1px solid var(--line)">
+          {posts.map((p, i) => (
+            <div class="admin-row">
+              <span class="index">{pad2(i + 1)}</span>
+              <a class="title" href={u(`/admin/edit/${p.id}`)}>
+                {p.title || 'untitled'}
+              </a>
+              <span class={`status-badge ${p.status}`}>{p.status}</span>
+              <AdminRowActions client:visible id={p.id} title={p.title} href={u(`/${p.slug}`)} />
+              <span class="sub">
+                /{p.slug} · edited {shortDate(p.updatedAt)}
+                {p.publishedAt && ` · published ${shortDate(p.publishedAt)}`}
+              </span>
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Base>

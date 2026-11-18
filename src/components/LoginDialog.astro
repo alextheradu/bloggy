@@ -1,0 +1,73 @@
+---
+import { u } from '../lib/url';
+import { isConfigured } from '../lib/auth/providers';
+
+const hca = isConfigured('hca');
+const github = isConfigured('github');
+---
+
+<dialog id="login-dialog" class="small" aria-labelledby="login-title">
+  <div class="pd-main">
+    <div class="pd-head">
+      <h3 id="login-title">log in</h3>
+      <button type="button" class="pd-close" data-close aria-label="close">esc ✕</button>
+    </div>
+    <p class="pd-summary">to react to posts. pick whichever account you have.</p>
+    <div class="login-choices">
+      <a class="btn big" data-provider="hca" href={u('/auth/login/hca')} aria-disabled={!hca}>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C2.4 0 0 2.4 0 12s2.4 12 12 12 12-2.4 12-12S21.6 0 12 0Zm4.5 18.2h-2.6V12.9c0-1.4-.6-2-1.8-2-1.3 0-2.1.8-2.1 2.4v4.9H7.4V5.8L10 5.3v4.6c.6-.7 1.5-1.1 2.8-1.1 2.4 0 3.7 1.5 3.7 4.1v5.3Z"/></svg>
+        continue with hack club<span class="go" aria-hidden="true">→</span>
+      </a>
+      <a class="btn big" data-provider="github" href={u('/auth/login/github')} aria-disabled={!github}>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.3-3.1-.2-.4-.6-1.6 0-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.9.1 3.2.8.8 1.3 1.9 1.3 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+        continue with github<span class="go" aria-hidden="true">→</span>
+      </a>
+    </div>
+    <p class="fine">no posting, no emails. just your name + avatar next to reactions.</p>
+  </div>
+</dialog>
+
+<script>
+  import { u } from '../lib/url';
+
+  const dlg = document.getElementById('login-dialog') as HTMLDialogElement | null;
+
+  function close() {
+    if (!dlg?.open) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return dlg.close();
+    dlg.classList.add('closing');
+    dlg.addEventListener('animationend', () => {
+      dlg.classList.remove('closing');
+      dlg.close();
+    }, { once: true });
+  }
+
+  function open(next?: string) {
+    if (!dlg) return;
+    const target = next || location.pathname + location.search;
+    dlg.querySelectorAll<HTMLAnchorElement>('a[data-provider]').forEach((a) => {
+      a.href = `${u(`/auth/login/${a.dataset.provider}`)}?next=${encodeURIComponent(target)}`;
+    });
+    dlg.showModal();
+  }
+
+  (window as any).blogOpenLogin = open;
+  window.addEventListener('blog:login', (e) => open((e as CustomEvent).detail?.next));
+
+  dlg?.querySelector('[data-close]')?.addEventListener('click', close);
+  dlg?.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    close();
+  });
+  dlg?.addEventListener('click', (e) => {
+    if (e.target === dlg) close();
+  });
+
+  document.querySelectorAll<HTMLAnchorElement>('a[data-login]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      open();
+    }),
+  );
+</script>

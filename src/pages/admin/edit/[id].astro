@@ -1,0 +1,25 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Editor from '../../../components/editor/Editor';
+import { getPostById } from '../../../lib/posts';
+
+const id = Number(Astro.params.id);
+const post = Number.isInteger(id) ? await getPostById(id) : null;
+if (!post) return new Response('not found', { status: 404 });
+
+const props = {
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt,
+  status: post.status,
+  contentJson: post.contentJson as object,
+  publishedAt: post.publishedAt?.toISOString() ?? null,
+};
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<Base title={`edit: ${post.title || 'untitled'}`} noindex wide>
+  <Editor client:only="react" post={props} />
+  <noscript><p class="empty">the editor needs javascript.</p></noscript>
+</Base>

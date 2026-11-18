@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { u } from '../lib/url';
+---
+
+<Base title="not found" noindex>
+  <section class="hero">
+    <p class="eyebrow">// 404</p>
+    <h1>nothing here</h1>
+    <p class="lead">
+      that post doesn't exist (or it's still a draft). try the <a href={u('/')}>index</a>, or hit <kbd>⌘</kbd> <kbd>k</kbd> to search.
+    </p>
+  </section>
+</Base>

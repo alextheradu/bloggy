@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { u, safeNext } from '../lib/url';
+import { isConfigured } from '../lib/auth/providers';
+
+const next = safeNext(Astro.url.searchParams.get('next'));
+if (Astro.locals.user) return Astro.redirect(next);
+const error = Astro.url.searchParams.get('error');
+const providers = [
+  { id: 'hca', label: 'continue with hack club', ok: isConfigured('hca') },
+  { id: 'github', label: 'continue with github', ok: isConfigured('github') },
+] as const;
+---
+
+<Base title="log in" noindex>
+  <section class="hero">
+    <p class="eyebrow">// login</p>
+    <h1>log in</h1>
+    <p class="lead">to react to posts. pick whichever account you have.</p>
+  </section>
+  {error && <p class="empty" style="color: var(--focus)">login failed ({error}). try again?</p>}
+  <section style="max-width: 360px">
+    <div class="login-choices">
+      {
+        providers.map((p) =>
+          p.ok ? (
+            <a class="btn big" href={`${u(`/auth/login/${p.id}`)}?next=${encodeURIComponent(next)}`}>
+              {p.label}
+              <span class="go" aria-hidden="true">→</span>
+            </a>
+          ) : (
+            <span class="btn big" aria-disabled="true" style="opacity:.45">
+              {p.label} (not configured)
+            </span>
+          ),
+        )
+      }
+    </div>
+  </section>
+</Base>

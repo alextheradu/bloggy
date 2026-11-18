@@ -1,0 +1,45 @@
+# Local dev dependencies: Postgres + S3 (RustFS).
+#   docker compose -f docker-compose.dev.yml up -d
+# Host ports are overridable in case they clash with something else:
+#   BLOG_PG_PORT=5442 BLOG_S3_PORT=9040 BLOG_S3_CONSOLE_PORT=9041
+name: alexradu-blog-dev
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: blog
+      POSTGRES_PASSWORD: blog
+      POSTGRES_DB: blog
+    ports:
+      - "${BLOG_PG_PORT:-5442}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blog -d blog"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  rustfs:
+    # S3-compatible, Apache-2.0. Same image Dokploy's RustFS template uses.
+    # Root creds double as the app creds in dev (match .env.example); the
+    # app creates the bucket itself on first write (see src/lib/s3.ts).
+    image: rustfs/rustfs:1.0.6
+    command: /data
+    environment:
+      RUSTFS_ACCESS_KEY: blog
+      RUSTFS_SECRET_KEY: blogblogblog
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+    ports:
+      - "${BLOG_S3_PORT:-9040}:9000"
+      - "${BLOG_S3_CONSOLE_PORT:-9041}:9001"
+    volumes:
+      # Named volume: no chown needed (container runs as uid 10001).
+      - rustfsdata:/data
+
+volumes:
+  pgdata:
+  rustfsdata:

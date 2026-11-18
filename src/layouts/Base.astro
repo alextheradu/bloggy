@@ -1,0 +1,107 @@
+---
+import '../styles/tailwind.css';
+import Header from '../components/Header.astro';
+import LoginDialog from '../components/LoginDialog.astro';
+import CommandPalette from '../components/react/CommandPalette';
+import { u } from '../lib/url';
+import { abs, MAIN_SITE } from '../lib/config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  ogImage?: string | null;
+  publishedAt?: Date | null;
+  noindex?: boolean;
+  wide?: boolean;
+}
+
+const {
+  title,
+  description = 'notes, build logs and other things by alex radu.',
+  ogType = 'website',
+  ogImage,
+  publishedAt,
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} — alex radu` : 'blog — alex radu';
+const canonical = abs(Astro.url.pathname.replace(/^\/blog/, '') || '/');
+const image = ogImage ? (ogImage.startsWith('http') ? ogImage : `${new URL(canonical).origin}${ogImage}`) : null;
+const user = Astro.locals.user;
+const isAdmin = Astro.locals.isAdmin;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={u('/favicon.ico')} />
+    <link rel="alternate" type="application/rss+xml" title="alex radu — blog" href={u('/rss.xml')} />
+    <link rel="alternate" type="application/feed+json" title="alex radu — blog" href={u('/feed.json')} />
+    <meta name="theme-color" content="#0d0f11" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:site_name" content="alex radu" />
+    <meta property="og:title" content={title ?? 'blog'} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content={ogType} />
+    {image && <meta property="og:image" content={image} />}
+    {publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={title ?? 'blog — alex radu'} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={image} />}
+    <slot name="head" />
+  </head>
+  <body class:list={{ wide: Astro.props.wide }}>
+    <div class="progress" aria-hidden="true"></div>
+
+    <Header />
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site">
+      <p>
+        written by <a href={MAIN_SITE}>alex radu</a>. subscribe via <a href={u('/rss.xml')}>rss</a>.
+      </p>
+      <span class="k"><kbd>⌘</kbd> <kbd>k</kbd> to search</span>
+    </footer>
+
+    <LoginDialog />
+    <CommandPalette
+      client:idle
+      base={u('/')}
+      user={user ? { name: user.name } : null}
+      isAdmin={isAdmin}
+    />
+
+    <script>
+      // scroll progress bar (2px green, top)
+      const bar = document.querySelector<HTMLElement>('.progress');
+      if (bar) {
+        let ticking = false;
+        const update = () => {
+          const max = document.documentElement.scrollHeight - innerHeight;
+          bar.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+          ticking = false;
+        };
+        addEventListener('scroll', () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        }, { passive: true });
+        addEventListener('resize', update);
+        update();
+      }
+    </script>
+  </body>
+</html>

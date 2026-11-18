@@ -1,0 +1,87 @@
+/*
+ * Tailwind for the shadcn / React Bits islands only.
+ * Preflight is deliberately NOT imported: global.css (copied from the
+ * portfolio) owns the base styles, and everything here sits in cascade
+ * layers: global.css is imported into `base`, so shadcn utility classes
+ * win inside islands while plain Astro markup keeps the portfolio look.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "tw-animate-css";
+@import "./global.css" layer(base);
+
+@source "../components";
+
+@custom-variant dark (&:is(.dark *));
+
+/* shadcn semantic tokens mapped onto the portfolio palette (dark only) */
+:root {
+  --radius: 0.5rem;
+  --background: #0d0f11;
+  --foreground: #f0f1f2;
+  --card: #121518;
+  --card-foreground: #f0f1f2;
+  --popover: #121518;
+  --popover-foreground: #b7bcc1;
+  --primary: #00ff1e;
+  --primary-foreground: #0d0f11;
+  --secondary: #15181b;
+  --secondary-foreground: #b7bcc1;
+  --muted: #15181b;
+  --muted-foreground: #6d7378;
+  --accent: #1a1e22;
+  --accent-foreground: #f0f1f2;
+  --destructive: #ff6b6b;
+  --border: #262b2f;
+  --input: #262b2f;
+  --ring: #e2a640;
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  /* portfolio extras */
+  --color-heading: #f0f1f2;
+  --color-body: #b7bcc1;
+  --color-dim: #6d7378;
+  --color-faint: #3a4045;
+  --color-line: #1c1f22;
+  --color-green: #00ff1e;
+}
+
+/* minimal resets for island elements, since preflight is off */
+@layer components {
+  [data-slot] {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border);
+  }
+  [data-slot] :where(button, input, textarea) {
+    font: inherit;
+    color: inherit;
+  }
+}

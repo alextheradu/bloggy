@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Reactions from '../components/react/Reactions';
+import { getPostBySlug } from '../lib/posts';
+import { reactionSummary } from '../lib/reactions';
+import { u } from '../lib/url';
+import { longDate } from '../lib/format';
+
+const { slug } = Astro.params;
+const isAdmin = Astro.locals.isAdmin;
+const post = slug ? await getPostBySlug(slug, { includeDrafts: isAdmin }) : null;
+if (!post) return Astro.rewrite(u('/404'));
+
+const user = Astro.locals.user;
+const reactions = await reactionSummary(post.id, user?.id);
+const when = post.publishedAt ?? post.updatedAt;
+
+Astro.response.headers.set('Cache-Control', 'private, no-cache');
+---
+
+<Base
+  title={post.title || 'untitled'}
+  description={post.excerpt || post.contentText.slice(0, 180)}
+  ogType="article"
+  ogImage={post.coverImage}
+  publishedAt={post.publishedAt}
+  noindex={post.status !== 'published'}
+>
+  <article>
+    <header class="post-header">
+      <h1>{post.title || 'untitled'}</h1>
+      <p class="post-meta">
+        <span><time datetime={when.toISOString()}>{longDate(when)}</time></span>
+        <span>{post.readingMinutes} min read</span>
+        {post.status !== 'published' && <span class="status">{post.status}</span>}
+        {isAdmin && <span><a href={u(`/admin/edit/${post.id}`)}>edit</a></span>}
+      </p>
+    </header>
+
+    <div class="prose" set:html={post.contentHtml} />
+  </article>
+
+  <section class="reactions" aria-label="reactions">
+    <Reactions client:visible postId={post.id} initial={reactions} loggedIn={!!user} />
+  </section>
+</Base>

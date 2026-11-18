@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import BlurText from '../components/reactbits/BlurText';
+import { listPublished } from '../lib/posts';
+import { u } from '../lib/url';
+import { shortDate, yearOf, pad2 } from '../lib/format';
+
+const posts = await listPublished();
+
+// group by year, newest first; numbering runs top-down across the page
+const groups: { year: number; items: (typeof posts[number] & { n: number })[] }[] = [];
+let n = 0;
+for (const p of posts) {
+  const y = yearOf(p.publishedAt ?? new Date());
+  let g = groups.at(-1);
+  if (!g || g.year !== y) groups.push((g = { year: y, items: [] }));
+  g.items.push({ ...p, n: ++n });
+}
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=600');
+---
+
+<Base>
+  <section class="hero">
+    <p class="eyebrow">// blog</p>
+    <h1 class="visually-hidden">writing</h1>
+    <div class="hero-title" aria-hidden="true">
+      <BlurText client:load text="writing" animateBy="letters" delay={45} stepDuration={0.3} trigger="load" direction="bottom" distance={14} blur={8} />
+    </div>
+    <p class="lead">
+      notes from building things: robots, pipelines, hack club programs, and whatever i broke on the home server this week.
+    </p>
+  </section>
+
+  {
+    groups.length === 0 ? (
+      <section>
+        <h2>posts</h2>
+        <p class="empty">nothing here yet. soon™</p>
+      </section>
+    ) : (
+      groups.map((g) => (
+        <section class="year-group" aria-labelledby={`y-${g.year}`}>
+          <div class="section-head">
+            <h2 id={`y-${g.year}`}>{g === groups[0] ? 'posts' : 'earlier'}</h2>
+            <span class="year">{g.year}</span>
+          </div>
+          <div class="post-list">
+            {g.items.map((p) => (
+              <a class="post-row" href={u(`/${p.slug}`)}>
+                <div class="post-head">
+                  <span class="index">{pad2(p.n)}</span>
+                  <h3>{p.title || 'untitled'}</h3>
+                  <span class="open-hint" aria-hidden="true">
+                    <i class="arrow-ne" />
+                  </span>
+                  <span class="date">
+                    <time datetime={p.publishedAt?.toISOString()}>{p.publishedAt && shortDate(p.publishedAt)}</time>
+                  </span>
+                </div>
+                {p.excerpt && <p>{p.excerpt}</p>}
+              </a>
+            ))}
+          </div>
+        </section>
+      ))
+    )
+  }
+</Base>
