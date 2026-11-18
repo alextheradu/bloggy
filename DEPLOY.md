@@ -109,6 +109,22 @@ Health: `GET http://blog-s3-abc123:9000/health` → 200.
 
 **Cloudflare**: keep SSL/TLS on Flexible (as now). If you ever switch to Full, nothing in the app changes, because `PUBLIC_ORIGIN` already says https. Cache rules aren't required: responses set their own `Cache-Control` (emoji 7 d, media 1 y immutable, HTML not cached).
 
+### multi-arch image (x86 server + Raspberry Pi swarm nodes)
+
+Dokploy's own Dockerfile build is single-arch (whatever the build server is). For a swarm that schedules the blog on arm64 Pis, push one multi-arch image to a registry and point the app at it.
+
+The Dockerfile compiles **once**, natively on the x86 host: `deps`, `build` and `prod-deps` are pinned to `$BUILDPLATFORM`. `prod-deps` cross-installs the target arch's native packages (`npm ci --cpu=arm64 …`), and the per-arch `runtime` stage only `COPY`s. No QEMU/binfmt needed.
+
+```sh
+# once: multi-platform output needs a docker-container builder
+docker buildx create --name multiarch --driver docker-container --use
+
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t <registry>/alexradu-blog:latest --push .
+```
+
+Then in Dokploy, set the blog's **Provider → Docker** to `<registry>/alexradu-blog:latest` (plus registry creds if it's private). Each swarm node pulls the matching arch from the manifest list. 32-bit Pi OS: add `linux/arm/v7` to `--platform`.
+
 ## 4. oauth apps + finding your admin ids
 
 ### GitHub
