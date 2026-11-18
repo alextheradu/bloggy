@@ -23,9 +23,9 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, sta
 <Base>
   <section class="hero">
     <!-- <p class="eyebrow">// blog</p> -->
-    <h1 class="visually-hidden">// blog</h1>
+    <!-- <h1 class="visually-hidden">// blog</h1> -->
     <div class="hero-title" aria-hidden="true">
-      <BlurText client:load text="writing" animateBy="letters" delay={45} stepDuration={0.3} trigger="load" direction="bottom" distance={14} blur={8} />
+      <BlurText client:load text="// blog" animateBy="letters" delay={45} stepDuration={0.3} trigger="load" direction="bottom" distance={14} blur={8} />
     </div>
     <!-- <p class="lead">
       notes from building things: robots, pipelines, hack club programs, and whatever i broke on the home server this week.
@@ -36,7 +36,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, sta
     groups.length === 0 ? (
       <section>
         <h2>posts</h2>
-        <p class="empty">nothing here yet. soon™</p>
+        <p class="empty">coming soon™</p>
       </section>
     ) : (
       groups.map((g) => (
