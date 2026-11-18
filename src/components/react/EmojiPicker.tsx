@@ -118,7 +118,7 @@ export function EmojiPicker({ onPick, autoFocus = true }: EmojiPickerProps) {
             <TabsTrigger
               key={t}
               value={t}
-              className="flex-none rounded-none border-0 border-b border-transparent bg-transparent px-2 py-1.5 font-mono text-[0.72rem] text-dim shadow-none data-[state=active]:border-green data-[state=active]:bg-transparent data-[state=active]:text-heading data-[state=active]:shadow-none"
+              className="flex-none rounded-none border-0 border-b border-transparent bg-transparent px-2 py-1.5 font-mono text-[0.72rem] text-dim shadow-none data-[state=active]:border-heading data-[state=active]:bg-transparent data-[state=active]:text-heading data-[state=active]:shadow-none"
             >
               {t}
             </TabsTrigger>

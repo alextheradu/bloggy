@@ -84,12 +84,12 @@ body[data-scroll-locked] {
   padding-right: var(--pad-x) !important;
 }
 
-/* grey 1px underline, green one slides over it on hover */
+/* grey 1px underline, white one slides over it on hover */
 a {
   color: #ffffff;
   text-decoration: none;
   padding-bottom: 1px;
-  background-image: linear-gradient(var(--green), var(--green)), linear-gradient(var(--dim), var(--dim));
+  background-image: linear-gradient(var(--heading), var(--heading)), linear-gradient(var(--dim), var(--dim));
   background-repeat: no-repeat;
   background-position:
     0 100%,
@@ -1001,7 +1001,7 @@ dialog.small {
 }
 
 [cmdk-item][data-selected="true"] [data-slot="command-shortcut"] {
-  color: var(--green);
+  color: var(--heading);
 }
 
 [data-slot="command-input-wrapper"] {
@@ -1077,7 +1077,7 @@ kbd {
 
 .picker-tabs button[aria-selected="true"] {
   color: var(--heading);
-  border-bottom-color: var(--green);
+  border-bottom-color: var(--heading);
 }
 
 .picker-tabs .count {
@@ -1197,7 +1197,7 @@ footer.site .k {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--green);
+  background: var(--body);
   transform: scaleX(0);
   transform-origin: left;
   z-index: 50;

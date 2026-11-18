@@ -301,7 +301,7 @@ export default function Editor({ post }: { post: EditorPost }) {
           pressed={!!pressed}
           onPressedChange={onClick}
           aria-label={label}
-          className="tb-btn h-8 min-w-8 rounded-md px-1.5 text-[#9aa1a8] hover:bg-accent hover:text-heading data-[state=on]:bg-[#1f2428] data-[state=on]:text-green"
+          className="tb-btn h-8 min-w-8 rounded-md px-1.5 text-[#9aa1a8] hover:bg-accent hover:text-heading data-[state=on]:bg-[#1f2428] data-[state=on]:text-heading"
         >
           {icon}
         </Toggle>
