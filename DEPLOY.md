@@ -51,8 +51,9 @@ The official `minio/minio` image is gone (project archived 2026), so this uses *
    Never leave the default `rustfsadmin` creds.
 5. **Advanced → Volumes**: add a **volume mount**, name `blog-s3-data`, mount path `/data`.
    (Use a named volume. A host bind mount would need `chown -R 10001:10001` first, because the container runs as uid 10001.)
-6. **Deploy**. The internal hostname is the app's **App Name** shown in Dokploy (e.g. `blog-s3-abc123`), so the blog uses
-   `S3_ENDPOINT=http://blog-s3-abc123:9000`.
+6. **Deploy**. The internal hostname is the app's full **App Name** shown in Dokploy, *including the project prefix* (e.g. `personal-website-blog-s3-cxwjfq`, not `blog-s3-cxwjfq`), so the blog uses
+   `S3_ENDPOINT=http://personal-website-blog-s3-cxwjfq:9000`. Check it from the manager with
+   `docker service ls | grep s3`. A wrong host shows up in the blog logs as `ENOTFOUND`.
 7. **No domain for port 9000.** The browser never talks to the bucket: uploads stream through `/blog/media/*` and emoji through `/blog/emoji/*`.
    - Optional: to use the web console, add a domain like `s3-console.alexradu.co` → container port **9001**, ideally behind Cloudflare Access. Otherwise leave it unexposed.
 
@@ -62,9 +63,9 @@ Manual alternative (verified against RustFS), from any machine on the Dokploy ne
 ```sh
 docker run --rm --network dokploy-network \
   -e AWS_ACCESS_KEY_ID=… -e AWS_SECRET_ACCESS_KEY=… -e AWS_DEFAULT_REGION=us-east-1 \
-  amazon/aws-cli --endpoint-url http://blog-s3-abc123:9000 s3 mb s3://blog
+  amazon/aws-cli --endpoint-url http://personal-website-blog-s3-cxwjfq:9000 s3 mb s3://blog
 ```
-Health: `GET http://blog-s3-abc123:9000/health` → 200.
+Health: `GET http://personal-website-blog-s3-cxwjfq:9000/health` → 200.
 
 ## 3. the blog
 
@@ -84,7 +85,7 @@ Health: `GET http://blog-s3-abc123:9000/health` → 200.
    ADMIN_HCA_IDS=ident!xxxxxx
    ADMIN_GITHUB_IDS=12345678
 
-   S3_ENDPOINT=http://blog-s3-abc123:9000
+   S3_ENDPOINT=http://personal-website-blog-s3-cxwjfq:9000
    S3_REGION=us-east-1
    S3_BUCKET=blog
    S3_ACCESS_KEY=<rustfs access key>
@@ -167,7 +168,7 @@ Admin = any user whose provider id is in either allowlist. Readers can use eithe
   ```sh
   docker run --rm --network dokploy-network \
     -e RCLONE_CONFIG_SRC_TYPE=s3 -e RCLONE_CONFIG_SRC_PROVIDER=Other \
-    -e RCLONE_CONFIG_SRC_ENDPOINT=http://blog-s3-abc123:9000 \
+    -e RCLONE_CONFIG_SRC_ENDPOINT=http://personal-website-blog-s3-cxwjfq:9000 \
     -e RCLONE_CONFIG_SRC_ACCESS_KEY_ID=… -e RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY=… \
     -e RCLONE_CONFIG_DST_TYPE=s3 -e RCLONE_CONFIG_DST_PROVIDER=Cloudflare \
     -e RCLONE_CONFIG_DST_ENDPOINT=https://<account>.r2.cloudflarestorage.com \

@@ -1537,12 +1537,18 @@ body.wide {
   align-items: center;
 }
 
+/* title: reads as a heading, but shows a field edge on hover/focus so it's
+   obviously editable */
 .title-input {
-  width: 100%;
+  display: block;
+  width: calc(100% + 24px);
+  margin: 0 -12px;
   background: none;
-  border: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
   outline: none;
-  padding: 0;
+  padding: 6px 12px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
   font: inherit;
   font-size: clamp(1.9rem, 5vw, 2.6rem);
   font-weight: 700;
@@ -1554,14 +1560,38 @@ body.wide {
   color: var(--faint);
 }
 
+.title-input:hover {
+  border-color: var(--line-2);
+}
+
+.title-input:focus {
+  border-color: var(--line-2);
+  background: var(--surface);
+}
+
+/* post details: its own panel, inputs inset on the page background */
 .meta-fields {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
-  margin: 22px 0 26px;
-  padding: 16px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  margin: 18px 0 28px;
+  padding: 14px 16px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+}
+
+.meta-fields .input,
+.meta-fields .slug-prefix {
+  background: var(--bg);
+}
+
+.panel-label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--faint);
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
 }
 
 .slug-row {
@@ -1591,20 +1621,54 @@ body.wide {
   color: var(--dim);
 }
 
+/* the body is one framed document: toolbar header, writing area, hint bar.
+   No overflow:hidden here, or the sticky toolbar stops sticking. */
+.editor-doc {
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.editor-doc:focus-within {
+  border-color: #353b40;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.025);
+}
+
 .toolbar {
   position: sticky;
-  top: 8px;
+  top: 0;
   z-index: 30;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 2px;
-  padding: 4px;
-  margin-bottom: 22px;
-  background: rgba(18, 21, 24, 0.92);
+  padding: 6px;
+  background: rgba(18, 21, 24, 0.94);
   backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 12px 12px 0 0;
+}
+
+.editor-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--faint);
+}
+
+.editor-hint kbd {
+  font: inherit;
+  color: var(--dim);
+  padding: 1px 5px;
+  margin-right: 4px;
   border: 1px solid var(--line-2);
-  border-radius: 10px;
+  border-radius: 4px;
+  background: var(--bg);
 }
 
 .tb-sep {
@@ -1616,8 +1680,15 @@ body.wide {
 
 .editor-body .ProseMirror {
   outline: none;
-  min-height: 50vh;
-  padding-bottom: 30vh;
+  min-height: 55vh;
+  padding: 24px 28px 80px;
+  cursor: text;
+}
+
+@media (max-width: 600px) {
+  .editor-body .ProseMirror {
+    padding: 18px 16px 64px;
+  }
 }
 
 .editor-body .ProseMirror p.is-empty::before,

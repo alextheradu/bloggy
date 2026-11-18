@@ -57,7 +57,14 @@ export const EmojiSuggestion = Extension.create({
         pluginKey: new PluginKey('emojiSuggest'),
         char: ':',
         allowSpaces: false,
-        allowedPrefixes: [' ', '(', ' '],
+        // Any prefix except a letter/digit: works right after another emoji
+        // (":sob::fire") but not inside "12:30" or "http://".
+        allowedPrefixes: null,
+        allow: ({ state, range }) => {
+          const before = state.doc.resolve(range.from).nodeBefore;
+          if (!before?.isText) return true;
+          return !/[\p{L}\p{N}_]/u.test(before.text!.slice(-1));
+        },
         items: ({ query }) => {
           const data = emojiDataSync();
           if (!data || query.length < 2 || query.endsWith(':')) return [];

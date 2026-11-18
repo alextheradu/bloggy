@@ -385,7 +385,7 @@ export default function Editor({ post }: { post: EditorPost }) {
         <input
           className="title-input"
           value={title}
-          placeholder="untitled"
+          placeholder="post title"
           aria-label="title"
           onChange={(ev) => {
             const t = ev.target.value;
@@ -406,7 +406,8 @@ export default function Editor({ post }: { post: EditorPost }) {
           }}
         />
 
-        <div className="meta-fields">
+        <div className="meta-fields" role="group" aria-label="post details">
+          <div className="panel-label">post details</div>
           <div className="field slug-field">
             <label htmlFor="post-slug">slug</label>
             <div className="slug-row">
@@ -446,6 +447,7 @@ export default function Editor({ post }: { post: EditorPost }) {
           </div>
         </div>
 
+        <div className="editor-doc">
         <div className="toolbar" role="toolbar" aria-label="formatting">
           {tb('heading 1', active?.h1, () => e?.chain().focus().toggleHeading({ level: 1 }).run(), <Heading1 className={ic} />)}
           {tb('heading 2', active?.h2, () => e?.chain().focus().toggleHeading({ level: 2 }).run(), <Heading2 className={ic} />)}
@@ -504,6 +506,14 @@ export default function Editor({ post }: { post: EditorPost }) {
         </div>
 
         <EditorContent editor={editor} className="editor-body" />
+
+        <div className="editor-hint" aria-hidden="true">
+          <span><kbd>/</kbd> blocks</span>
+          <span><kbd>:</kbd> emoji</span>
+          <span>paste or drop images</span>
+          <span><kbd>⌘s</kbd> save</span>
+        </div>
+        </div>
 
         <input
           ref={fileInput}

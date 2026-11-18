@@ -31,7 +31,12 @@ export interface ProxyOptions {
 }
 
 export async function proxyImage(o: ProxyOptions): Promise<Response> {
-  const cached = await getObject(o.key);
+  // The bucket is only a cache: if it's unreachable (bad endpoint, RustFS
+  // down) serve straight from upstream instead of 500ing every image.
+  const cached = await getObject(o.key).catch((err) => {
+    console.warn('[proxy] cache read failed, serving upstream', o.key, err?.message);
+    return null;
+  });
   if (cached) {
     const src = cached.metadata['source-url'];
     const fetchedAt = Number(cached.metadata['fetched-at'] || 0);
