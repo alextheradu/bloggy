@@ -1,8 +1,6 @@
 import { toast } from 'sonner';
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -10,6 +8,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+// raw Radix parts for the footer: the shadcn wrappers add <Button> utility
+// classes that would override .btn
+import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
 import { u } from '@/lib/url';
 
 export default function AdminRowActions({ id, title, href }: { id: number; title: string; href: string }) {
@@ -40,10 +41,10 @@ export default function AdminRowActions({ id, title, href }: { id: number; title
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="btn h-auto">cancel</AlertDialogCancel>
-            <AlertDialogAction className="btn danger h-auto" onClick={del}>
+            <AlertDialogPrimitive.Cancel className="btn">cancel</AlertDialogPrimitive.Cancel>
+            <AlertDialogPrimitive.Action className="btn danger" onClick={del}>
               delete
-            </AlertDialogAction>
+            </AlertDialogPrimitive.Action>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

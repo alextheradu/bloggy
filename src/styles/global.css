@@ -814,67 +814,7 @@ img.emoji {
 
 /* ---------- buttons + inputs ---------- */
 
-.btn {
-  font: inherit;
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--nav);
-  background: none;
-  border: 1px solid var(--line-3);
-  border-radius: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  text-decoration: none;
-  background-image: none;
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.btn:hover {
-  color: #fff;
-  border-color: var(--heading);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.btn.primary {
-  color: var(--bg);
-  background: var(--green);
-  border-color: var(--green);
-  font-weight: 600;
-}
-
-.btn.primary:hover {
-  background: #4dff63;
-  border-color: #4dff63;
-}
-
-.btn.danger:hover {
-  color: #ff6b6b;
-  border-color: #ff6b6b;
-}
-
-.btn.big {
-  font-size: 0.9rem;
-  padding: 10px 14px;
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.btn svg {
-  width: 16px;
-  height: 16px;
-  flex: none;
-}
+/* .btn lives in buttons.css (components layer, so it beats the island resets) */
 
 .field {
   display: flex;
@@ -997,18 +937,18 @@ dialog.small {
   font-size: 0.75rem;
   color: var(--dim);
   background: none;
-  border: 1px solid var(--line-3);
-  border-radius: 4px;
-  padding: 3px 8px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 3px 10px;
   cursor: pointer;
   transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
+    color 150ms var(--ease-out),
+    background-color 150ms var(--ease-out);
 }
 
 .pd-close:hover {
-  color: #fff;
-  border-color: var(--heading);
+  color: var(--heading);
+  background: #1a1e21;
 }
 
 .pd-summary {

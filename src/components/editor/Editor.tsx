@@ -29,8 +29,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -38,6 +36,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+// raw Radix parts for the footer: the shadcn wrappers add <Button> utility
+// classes that would override .btn
+import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
 import { Toasts } from '@/components/react/Toasts';
 import { EmojiPicker } from '@/components/react/EmojiPicker';
 import { baseExtensions } from '@/lib/editor/extensions';
@@ -372,10 +373,10 @@ export default function Editor({ post }: { post: EditorPost }) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="btn h-auto">cancel</AlertDialogCancel>
-                  <AlertDialogAction className="btn danger h-auto" onClick={del}>
+                  <AlertDialogPrimitive.Cancel className="btn">cancel</AlertDialogPrimitive.Cancel>
+                  <AlertDialogPrimitive.Action className="btn danger" onClick={del}>
                     delete
-                  </AlertDialogAction>
+                  </AlertDialogPrimitive.Action>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

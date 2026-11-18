@@ -10,6 +10,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
 @import "./global.css" layer(base);
+@import "./buttons.css" layer(components);
 
 @source "../components";
 
@@ -74,13 +75,14 @@
 
 /* minimal resets for island elements, since preflight is off */
 @layer components {
-  [data-slot] {
+  /* :where() = zero specificity, so component classes like .btn win */
+  :where([data-slot]) {
     box-sizing: border-box;
     border-width: 0;
     border-style: solid;
     border-color: var(--border);
   }
-  [data-slot] :where(button, input, textarea) {
+  :where([data-slot]) :where(button, input, textarea) {
     font: inherit;
     color: inherit;
   }
