@@ -111,19 +111,25 @@ Health: `GET http://blog-s3-abc123:9000/health` → 200.
 
 ### multi-arch image (x86 server + Raspberry Pi swarm nodes)
 
-Dokploy's own Dockerfile build is single-arch (whatever the build server is). For a swarm that schedules the blog on arm64 Pis, push one multi-arch image to a registry and point the app at it.
+**Don't use Provider → GitHub + Dockerfile build on the swarm.** Dokploy runs a plain `docker build` on the manager: the image is x86-only and never leaves that box. When swarm schedules the new task on a Pi, the pull fails (`pull access denied … repository does not exist`), the update rolls back, and the old container keeps serving. Redeploys "succeed" but nothing changes.
 
-The Dockerfile compiles **once**, natively on the x86 host: `deps`, `build` and `prod-deps` are pinned to `$BUILDPLATFORM`. `prod-deps` cross-installs the target arch's native packages (`npm ci --cpu=arm64 …`), and the per-arch `runtime` stage only `COPY`s. No QEMU/binfmt needed.
+Instead, `.github/workflows/image.yml` builds `linux/amd64,linux/arm64` on every push to `main`, pushes `ghcr.io/alextheradu/bloggy:latest` (+ `:sha-<commit>`), then hits Dokploy's deploy webhook. Each node pulls its own arch from the manifest list.
 
+The Dockerfile compiles **once**: `deps`, `build` and `prod-deps` are pinned to `$BUILDPLATFORM`; `prod-deps` cross-installs the target arch's native packages (`npm ci --cpu=arm64 …`), and the per-arch `runtime` stage only `COPY`s. No QEMU needed.
+
+One-time setup:
+1. Push the workflow once so the package exists, then make it public (GitHub → your profile → Packages → `bloggy` → Package settings → Change visibility). Private works too, but then add a GHCR registry with a `read:packages` token in Dokploy so every node can pull.
+2. Dokploy → blog app → **General → Provider → Docker**: image `ghcr.io/alextheradu/bloggy:latest`. This replaces the GitHub provider, so Dokploy's own autodeploy stops building.
+3. Dokploy → blog app → **Deployments** → copy the **Webhook URL** → GitHub repo → Settings → Secrets → Actions → `DOKPLOY_DEPLOY_WEBHOOK`.
+4. Push to `main` (or run the workflow manually). Check `docker service ps <app>` shows the new task `Running`, not `Rejected`.
+
+Local alternative to CI (needs a `docker-container` builder, since the default image store can't hold multi-arch):
 ```sh
-# once: multi-platform output needs a docker-container builder
 docker buildx create --name multiarch --driver docker-container --use
-
-docker buildx build --platform linux/amd64,linux/arm64 \
-  -t <registry>/alexradu-blog:latest --push .
+docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/alextheradu/bloggy:latest --push .
 ```
 
-Then in Dokploy, set the blog's **Provider → Docker** to `<registry>/alexradu-blog:latest` (plus registry creds if it's private). Each swarm node pulls the matching arch from the manifest list. 32-bit Pi OS: add `linux/arm/v7` to `--platform`.
+32-bit Pi OS: add `linux/arm/v7` to the platforms.
 
 ## 4. oauth apps + finding your admin ids
 

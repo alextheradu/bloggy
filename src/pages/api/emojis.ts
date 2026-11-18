@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCustomEmojis } from '../../lib/emoji/cachet';
 import { jsonBlob } from '../../lib/http';
 
-// GET /blog/api/emojis — compact custom emoji list: [{ n: name, a?: aliasOf }]
+// GET /blog/api/emojis: compact custom emoji list: [{ n: name, a?: aliasOf }]
 // The full ~15 MB Cachet payload never leaves the server.
 export const GET: APIRoute = async ({ request }) => {
   try {

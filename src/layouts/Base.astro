@@ -25,7 +25,7 @@ const {
   noindex = false,
 } = Astro.props;
 
-const fullTitle = title ? `${title} — alex radu` : 'blog — alex radu';
+const fullTitle = title ? `${title} · alex radu` : 'blog · alex radu';
 const canonical = abs(Astro.url.pathname.replace(/^\/blog/, '') || '/');
 const image = ogImage ? (ogImage.startsWith('http') ? ogImage : `${new URL(canonical).origin}${ogImage}`) : null;
 const user = Astro.locals.user;
@@ -41,8 +41,8 @@ const isAdmin = Astro.locals.isAdmin;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={u('/favicon.ico')} />
-    <link rel="alternate" type="application/rss+xml" title="alex radu — blog" href={u('/rss.xml')} />
-    <link rel="alternate" type="application/feed+json" title="alex radu — blog" href={u('/feed.json')} />
+    <link rel="alternate" type="application/rss+xml" title="alex radu · blog" href={u('/rss.xml')} />
+    <link rel="alternate" type="application/feed+json" title="alex radu · blog" href={u('/feed.json')} />
     <meta name="theme-color" content="#0d0f11" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
@@ -54,7 +54,7 @@ const isAdmin = Astro.locals.isAdmin;
     {image && <meta property="og:image" content={image} />}
     {publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
-    <meta name="twitter:title" content={title ?? 'blog — alex radu'} />
+    <meta name="twitter:title" content={title ?? 'blog · alex radu'} />
     <meta name="twitter:description" content={description} />
     {image && <meta name="twitter:image" content={image} />}
     <slot name="head" />

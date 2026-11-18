@@ -2,12 +2,12 @@ import type { APIRoute } from 'astro';
 import { listPublished } from '../lib/posts';
 import { abs } from '../lib/config';
 
-// /blog/feed.json — JSON Feed 1.1, so the portfolio can pull "latest posts".
+// /blog/feed.json: JSON Feed 1.1, so the portfolio can pull "latest posts".
 export const GET: APIRoute = async () => {
   const posts = await listPublished(30);
   const feed = {
     version: 'https://jsonfeed.org/version/1.1',
-    title: 'alex radu — blog',
+    title: 'alex radu · blog',
     home_page_url: abs('/'),
     feed_url: abs('/feed.json'),
     description: 'notes, build logs and other things by alex radu.',

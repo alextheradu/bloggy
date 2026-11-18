@@ -19,7 +19,7 @@ interface CompactEmoji {
 const codes = iamcal as Record<string, string | string[]>;
 const asList = (v: string | string[] | undefined) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
-/** [char, "shortcode other_code", group, label] — compact wire format for the picker */
+/** [char, "shortcode other_code", group, label]: compact wire format for the picker */
 export type UnicodeRow = [string, string, number, string];
 
 const rows: UnicodeRow[] = [];

@@ -11,7 +11,7 @@ export const GET: APIRoute = async ({ params }) => {
   return post ? Response.json(post) : bad('not found', 404);
 };
 
-// PUT — partial update. Content arrives as TipTap JSON; HTML is rendered server side.
+// PUT: partial update. Content arrives as TipTap JSON; HTML is rendered server side.
 export const PUT: APIRoute = async ({ params, request }) => {
   const id = Number(params.id);
   if (!Number.isInteger(id)) return bad('bad id');

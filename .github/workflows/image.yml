@@ -1,0 +1,63 @@
+# Builds the multi-arch image (x86 + arm64 for the Pi swarm nodes), pushes it
+# to GHCR, then tells Dokploy to redeploy. Dokploy can't do this itself: its
+# Dockerfile builds are a plain single-arch `docker build` that never leaves
+# the manager, so Pi nodes can't pull them and swarm silently rolls back.
+#
+# Setup (once):
+#   1. repo secret DOKPLOY_DEPLOY_WEBHOOK = the app's deploy webhook URL
+#      (Dokploy → blog app → Deployments → Webhook URL)
+#   2. Dokploy blog app → Provider → Docker, image ghcr.io/<owner>/<repo>:latest
+name: image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # No QEMU: the Dockerfile compiles once on the runner's arch and
+      # cross-installs arm64 native deps, so the arm64 stage is COPY-only.
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:sha-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # secret scoped to this step only, so no third-party action can read it
+      - name: redeploy on dokploy
+        env:
+          DOKPLOY_DEPLOY_WEBHOOK: ${{ secrets.DOKPLOY_DEPLOY_WEBHOOK }}
+        run: |
+          if [ -z "$DOKPLOY_DEPLOY_WEBHOOK" ]; then
+            echo "DOKPLOY_DEPLOY_WEBHOOK not set, skipping redeploy"
+            exit 0
+          fi
+          curl -fsS --retry 3 -o /dev/null -X POST "$DOKPLOY_DEPLOY_WEBHOOK"

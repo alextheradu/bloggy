@@ -1,5 +1,5 @@
 /* ==========================================================================
-   alexradu.co/blog — tokens + base copied from portfolio-v3 global.css so the
+   alexradu.co/blog: tokens + base copied from portfolio-v3 global.css so the
    blog reads as the same site. Blog-only components follow below.
    ========================================================================== */
 
@@ -554,7 +554,7 @@ section {
   font-size: 1.05rem;
 }
 
-/* rendered TipTap HTML — shared by the post page and the editor surface */
+/* rendered TipTap HTML, shared by the post page and the editor surface */
 .prose {
   color: var(--body);
   font-size: 1.02rem;

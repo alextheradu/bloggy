@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { resolveSlackAvatarUrl } from '../../lib/emoji/cachet';
 import { proxyImage } from '../../lib/image-proxy';
 
-// GET /blog/avatar/<slack id> — Hack Club user's Slack avatar via Cachet, proxied.
+// GET /blog/avatar/<slack id>: Hack Club user's Slack avatar via Cachet, proxied.
 export const GET: APIRoute = async ({ params, request }) => {
   const id = params.id ?? '';
   if (!/^[A-Z0-9]{5,20}$/.test(id)) return new Response('bad id', { status: 400 });

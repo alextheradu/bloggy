@@ -103,7 +103,7 @@ export function itemFromKey(data: EmojiData | null, key: string): EmojiItem {
 
 /**
  * Ranked search: exact > prefix > word-prefix > substring, shorter names first.
- * Linear over ~66k names, which is a few ms — fine per keystroke.
+ * Linear over ~66k names, which is a few ms: fine per keystroke.
  */
 export function searchEmoji(
   data: EmojiData,
@@ -173,7 +173,7 @@ export function pushRecent(key: string) {
     const next = [key, ...getRecent().filter((k) => k !== key)].slice(0, RECENT_MAX);
     localStorage.setItem(RECENT_KEY, JSON.stringify(next));
   } catch {
-    /* storage blocked — recents are a nicety */
+    /* storage blocked; recents are a nicety */
   }
 }
 

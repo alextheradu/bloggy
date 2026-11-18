@@ -318,7 +318,7 @@ export default function Editor({ post }: { post: EditorPost }) {
     save === 'saving'
       ? 'saving…'
       : save === 'error'
-        ? 'save failed — retry ⌘s'
+        ? 'save failed, retry ⌘s'
         : save === 'dirty'
           ? status === 'draft'
             ? 'editing…'
@@ -426,7 +426,7 @@ export default function Editor({ post }: { post: EditorPost }) {
               />
             </div>
             {publishedAt && (
-              <span className="field-note">live since {new Date(publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toLowerCase()} — changing the slug breaks old links</span>
+              <span className="field-note">live since {new Date(publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toLowerCase()}. changing the slug breaks old links</span>
             )}
           </div>
           <div className="field">

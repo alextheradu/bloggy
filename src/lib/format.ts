@@ -6,7 +6,7 @@ const fullFmt = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/New_York',
 });
 
-/** "nov 18" — everything lowercase in tone */
+/** "nov 18": everything lowercase in tone */
 export const shortDate = (d: Date) => dateFmt.format(d).toLowerCase();
 /** "november 18, 2026" */
 export const longDate = (d: Date) => fullFmt.format(d).toLowerCase();

@@ -70,7 +70,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     if (!response.headers.has('X-Frame-Options')) response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   } catch {
-    // immutable headers (e.g. Response.redirect) — nothing to add
+    // immutable headers (e.g. Response.redirect), nothing to add
   }
   return response;
 });

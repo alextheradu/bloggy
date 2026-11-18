@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { listPublished } from '../../lib/posts';
 import { u } from '../../lib/url';
 
-// GET /blog/api/search — published posts for the cmd+k palette (searched client side).
+// GET /blog/api/search: published posts for the cmd+k palette (searched client side).
 export const GET: APIRoute = async () => {
   const posts = await listPublished();
   return Response.json(

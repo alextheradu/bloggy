@@ -11,7 +11,7 @@ export function u(path = '/'): string {
   return `${BASE}${p}`;
 }
 
-/** /blog/emoji/<name> — proxied custom emoji image, never slack-edge directly. */
+/** /blog/emoji/<name>: proxied custom emoji image, never slack-edge directly. */
 export const emojiUrl = (name: string) => u(`/emoji/${encodeURIComponent(name)}`);
 
 /** Only allow same-site relative redirects back into the blog. */

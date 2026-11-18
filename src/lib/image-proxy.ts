@@ -22,7 +22,7 @@ export interface ProxyOptions {
   key: string;
   request: Request;
   cacheControl: string;
-  /** upstream url if already known (cheap) — mismatching cached objects are refetched */
+  /** upstream url if already known (cheap); mismatching cached objects are refetched */
   knownUrl?: string | null;
   /** resolve upstream url when nothing usable is cached (may hit the network) */
   resolve: () => Promise<string | null>;
